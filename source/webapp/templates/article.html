@@ -1,0 +1,17 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Article</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="container">
+    <p><a href="/">Return to Index</a></p>
+    <h1>{{ article.title }}</h1>
+    <p>Created by <b>{{ article.author }}</b> at <b>{{ article.created_at }}</b></p>
+    <div>{{ article.text }}</div>
+</div>
+</body>
+</html>
