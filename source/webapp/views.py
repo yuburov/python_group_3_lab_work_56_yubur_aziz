@@ -39,36 +39,22 @@ def article_create_view(request, *args, **kwargs):
 def article_update_view(request, pk):
     article = get_object_or_404(Article, pk=pk)
     if request.method == 'GET':
-        return render(request, 'update.html', context={'article': article})
+        form = ArticleForm(data={
+            'title': article.title,
+            'author': article.author,
+            'text': article.text
+        })
+        return render(request, 'update.html', context={'form': form, 'article': article})
     elif request.method == 'POST':
-        article.title = request.POST.get('title')
-        article.author = request.POST.get('author')
-        article.text = request.POST.get('text')
-
-        errors = {}
-        if not article.title:
-            errors['title'] = 'Title should not be empty!'
-        elif len(article.title) > 200:
-            errors['title'] = 'Title should be 200 symbols or less!'
-
-        if not article.author:
-            errors['author'] = 'Author should not be empty!'
-        elif len(article.author) > 40:
-            errors['author'] = 'Author should be 40 symbols or less!'
-
-        if not article.text:
-            errors['text'] = 'Text should not be empty!'
-        elif len(article.text) > 3000:
-            errors['text'] = 'Text should be 3000 symbols or less!'
-
-        if len(errors) > 0:
-            return render(request, 'update.html', context={
-                'errors': errors,
-                'article': article
-            })
-
-        article.save()
-        return redirect('article_view', pk=article.pk)
+        form = ArticleForm(data=request.POST)
+        if form.is_valid():
+            article.title = form.cleaned_data['title']
+            article.author = form.cleaned_data['author']
+            article.text = form.cleaned_data['text']
+            article.save()
+            return redirect('article_view', pk=article.pk)
+        else:
+            return render(request, 'update.html', context={'form': form, 'article': article})
 
 
 def article_delete_view(request, pk):
