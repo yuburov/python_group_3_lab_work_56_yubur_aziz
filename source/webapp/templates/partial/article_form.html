@@ -1,27 +1,15 @@
 {% csrf_token %}
 
-<p><label>Title</label></p>
-{% if errors.title %}
-    <p><input class="field-error" type="text" name="title" value="{{ article.title }}"></p>
-    <p class="form-error">{{ errors.title }}</p>
-{% else %}
-    <p><input type="text" name="title" value="{{ article.title }}"></p>
-{% endif %}
+{% for error in form.non_field_errors %}
+    <p class="form-error">{{ error }}</p>
+{% endfor %}
 
-<p><label>Author</label></p>
-{% if errors.author %}
-    <p><input class="field-error" type="text" name="author" value="{{ article.author }}"></p>
-    <p class="form-error">{{ errors.author }}</p>
-{% else %}
-    <p><input type="text" name="author" value="{{ article.author }}"></p>
-{% endif %}
-
-<p><label>Text</label></p>
-{% if errors.text %}
-    <p><textarea class="field-error" name="text">{{ article.text }}</textarea></p>
-    <p class="form-error">{{ errors.text }}</p>
-{% else %}
-    <p><textarea name="text">{{ article.text }}</textarea></p>
-{% endif %}
+{% for field in form %}
+    <p><label for="{{ field.id_for_label }}">{{ field.label }}</label></p>
+    {% for error in field.errors %}
+        <p class="form-error">{{ error }}</p>
+    {% endfor %}
+    <p>{{ field }}</p>
+{% endfor %}
 
 <p><input type="submit" value="{{ button_text }}"></p>
