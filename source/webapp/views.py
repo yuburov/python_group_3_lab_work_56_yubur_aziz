@@ -1,14 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import View
 
 from webapp.forms import ArticleForm
 from webapp.models import Article
 
 
-def index_view(request, *args, **kwargs):
-    articles = Article.objects.all()
-    return render(request, 'index.html', context={
-        'articles': articles
-    })
+class IndexView(View):
+    def get(self, request, *args, **kwargs):
+        articles = Article.objects.all()
+        return render(request, 'index.html', context={
+            'articles': articles
+        })
 
 
 def article_view(request, pk):
