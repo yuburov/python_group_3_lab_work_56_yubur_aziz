@@ -7,7 +7,11 @@ from webapp.models import Article
 
 class IndexView(TemplateView):
     template_name = 'index.html'
-    extra_context = {'articles': Article.objects.all()}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['articles'] = Article.objects.all()
+        return context
 
 
 class ArticleView(TemplateView):
