@@ -7,7 +7,7 @@ from webapp.models import Article, Comment
 
 
 class IndexView(TemplateView):
-    template_name = 'index.html'
+    template_name = 'article/index.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -16,7 +16,7 @@ class IndexView(TemplateView):
 
 
 class ArticleView(TemplateView):
-    template_name = 'article.html'
+    template_name = 'article/article.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -28,7 +28,7 @@ class ArticleView(TemplateView):
 class ArticleCreateView(View):
     def get(self, request, *args, **kwargs):
         form = ArticleForm()
-        return render(request, 'create.html', context={'form': form})
+        return render(request, 'article/create.html', context={'form': form})
 
     def post(self, request, *args, **kwargs):
         form = ArticleForm(data=request.POST)
@@ -41,7 +41,7 @@ class ArticleCreateView(View):
             )
             return redirect('article_view', pk=article.pk)
         else:
-            return render(request, 'create.html', context={'form': form})
+            return render(request, 'article/create.html', context={'form': form})
 
 
 class ArticleUpdateView(View):
@@ -53,7 +53,7 @@ class ArticleUpdateView(View):
             'text': article.text,
             'category': article.category_id
         })
-        return render(request, 'update.html', context={'form': form, 'article': article})
+        return render(request, 'article/update.html', context={'form': form, 'article': article})
 
     def post(self, request, *args, **kwargs):
         article = get_object_or_404(Article, pk=kwargs.get('pk'))
@@ -66,13 +66,13 @@ class ArticleUpdateView(View):
             article.save()
             return redirect('article_view', pk=article.pk)
         else:
-            return render(request, 'update.html', context={'form': form, 'article': article})
+            return render(request, 'article/update.html', context={'form': form, 'article': article})
 
 
 class ArticleDeleteView(View):
     def get(self, request, *args, **kwargs):
         article = get_object_or_404(Article, pk=kwargs.get('pk'))
-        return render(request, 'delete.html', context={'article': article})
+        return render(request, 'article/delete.html', context={'article': article})
 
     def post(self, request, *args, **kwargs):
         article = get_object_or_404(Article, pk=kwargs.get('pk'))
