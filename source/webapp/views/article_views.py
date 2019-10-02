@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.views.generic import TemplateView, ListView
 
-from webapp.forms import ArticleForm
+from webapp.forms import ArticleForm, ArticleCommentForm
 from webapp.models import Article
 
 
@@ -22,6 +22,7 @@ class ArticleView(TemplateView):
         context = super().get_context_data(**kwargs)
         article_pk = kwargs.get('pk')
         context['article'] = get_object_or_404(Article, pk=article_pk)
+        context['form'] = ArticleCommentForm()
         return context
 
 
