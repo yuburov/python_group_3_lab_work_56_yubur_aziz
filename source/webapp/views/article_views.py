@@ -1,12 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from webapp.forms import ArticleForm, ArticleCommentForm
 from webapp.models import Article
 from django.core.paginator import Paginator
-
-from .base_views import DetailView
 
 
 class IndexView(ListView):
@@ -21,7 +19,7 @@ class IndexView(ListView):
 class ArticleView(DetailView):
     template_name = 'article/article.html'
     model = Article
-    context_key = 'article'
+    context_object_name = 'article'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
