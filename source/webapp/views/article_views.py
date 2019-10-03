@@ -1,13 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
 
 from webapp.forms import ArticleForm, ArticleCommentForm
 from webapp.models import Article
 from django.core.paginator import Paginator
 
-from .base_views import CreateView
 
 
 class IndexView(ListView):
@@ -44,9 +43,9 @@ class ArticleView(DetailView):
 class ArticleCreateView(CreateView):
     model = Article
     template_name = 'article/create.html'
-    form_class = ArticleForm
+    fields = ['title', 'author', 'text', 'category']
 
-    def get_redirect_url(self):
+    def get_success_url(self):
         return reverse('article_view', kwargs={'pk': self.object.pk})
 
 
