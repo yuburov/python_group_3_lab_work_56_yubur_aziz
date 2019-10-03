@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView
 
@@ -43,7 +43,7 @@ class ArticleView(DetailView):
 class ArticleCreateView(CreateView):
     model = Article
     template_name = 'article/create.html'
-    fields = ['title', 'author', 'text', 'category']
+    form_class = ArticleForm
 
     def get_success_url(self):
         return reverse('article_view', kwargs={'pk': self.object.pk})
