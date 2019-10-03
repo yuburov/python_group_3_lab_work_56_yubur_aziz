@@ -1,17 +1,16 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import ListView, CreateView
 
 from webapp.forms import CommentForm, ArticleCommentForm
 from webapp.models import Comment, Article
-from .base_views import ListView, CreateView
 
 
 class CommentListView(ListView):
-    context_key = 'comments'
+    context_object_name = 'comments'
     model = Comment
     template_name = 'comment/list.html'
+    ordering = ['-created_at']
 
 
 class CommentForArticleCreateView(CreateView):
@@ -30,5 +29,5 @@ class CommentCreateView(CreateView):
     template_name = 'comment/create.html'
     form_class = CommentForm
 
-    def get_redirect_url(self):
+    def get_success_url(self):
         return reverse('article_view', kwargs={'pk': self.object.article.pk})
