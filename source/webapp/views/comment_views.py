@@ -11,6 +11,8 @@ class CommentListView(ListView):
     model = Comment
     template_name = 'comment/list.html'
     ordering = ['-created_at']
+    paginate_by = 10
+    paginate_orphans = 3
 
 
 class CommentForArticleCreateView(CreateView):
