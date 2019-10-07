@@ -78,7 +78,6 @@ class UpdateView(View):
         initial = {}
         for field in model_fields:
             initial[field] = getattr(self.object, field)
-        print(initial)
         return initial
 
     def post(self, request, *args, **kwargs):
