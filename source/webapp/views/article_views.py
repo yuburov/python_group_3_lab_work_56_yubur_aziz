@@ -1,8 +1,10 @@
+from django.db.models import Q
 from django.urls import reverse, reverse_lazy
+from django.utils.http import urlencode
 from django.views.generic import ListView, DetailView, CreateView, \
     UpdateView, DeleteView
 
-from webapp.forms import ArticleForm, ArticleCommentForm
+from webapp.forms import ArticleForm, ArticleCommentForm, SimpleSearchForm
 from webapp.models import Article
 from django.core.paginator import Paginator
 
@@ -14,6 +16,31 @@ class IndexView(ListView):
     ordering = ['-created_at']
     paginate_by = 5
     paginate_orphans = 1
+
+    def get(self, request, *args, **kwargs):
+        form = SimpleSearchForm(self.request.GET)
+        query = None
+        if form.is_valid():
+            query = form.cleaned_data['search']
+        self.form = form
+        self.query = query
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        if self.query:
+            context['query'] = urlencode({'search': self.query})
+        context['form'] = self.form
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.query:
+            queryset = queryset.filter(
+                Q(title__icontains=self.query)
+                | Q(author__icontains=self.query)
+            )
+        return queryset
 
 
 class ArticleView(DetailView):
