@@ -1,11 +1,12 @@
 from django.db.models import Q
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.http import urlencode
 from django.views.generic import ListView, DetailView, CreateView, \
     UpdateView, DeleteView
 
 from webapp.forms import ArticleForm, ArticleCommentForm, SimpleSearchForm
-from webapp.models import Article
+from webapp.models import Article, STATUS_ARCHIVED, STATUS_ACTIVE
 from django.core.paginator import Paginator
 
 
@@ -27,15 +28,20 @@ class IndexView(ListView):
         if self.search_query:
             context['query'] = urlencode({'search': self.search_query})
         context['form'] = self.form
+        context['archived_articles'] = self.get_archived_articles()
         return context
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(status=STATUS_ACTIVE)
         if self.search_query:
             queryset = queryset.filter(
                 Q(title__icontains=self.search_query)
                 | Q(author__icontains=self.search_query)
             )
+        return queryset
+
+    def get_archived_articles(self):
+        queryset = super().get_queryset().filter(status=STATUS_ARCHIVED)
         return queryset
 
     def get_search_form(self):
@@ -93,3 +99,9 @@ class ArticleDeleteView(DeleteView):
     template_name = 'article/delete.html'
     context_object_name = 'article'
     success_url = reverse_lazy('index')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.status = STATUS_ARCHIVED
+        self.object.save()
+        return redirect(self.get_success_url())
