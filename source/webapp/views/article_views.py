@@ -1,11 +1,11 @@
 from django.db.models import Q
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.http import urlencode
 from django.views.generic import ListView, DetailView, CreateView, \
-    UpdateView, DeleteView
+    UpdateView, DeleteView, FormView
 
-from webapp.forms import ArticleForm, ArticleCommentForm, SimpleSearchForm
+from webapp.forms import ArticleForm, ArticleCommentForm, SimpleSearchForm, FullSearchForm
 from webapp.models import Article, STATUS_ARCHIVED, STATUS_ACTIVE
 from django.core.paginator import Paginator
 
@@ -52,6 +52,36 @@ class IndexView(ListView):
             return self.form.cleaned_data['search']
         return None
 
+
+class ArticleSearchView(FormView):
+    template_name = 'article/search.html'
+    form_class = FullSearchForm
+
+    def form_valid(self, form):
+        text = form.cleaned_data.get('text')
+        query = Q()
+        if text:
+            query = query & self.get_text_query(form, text)
+        articles = Article.objects.filter(query).distinct()
+        context = self.get_context_data()
+        context['articles'] = articles
+        return self.render_to_response(context)
+
+    def get_text_query(self, form, text):
+        query = Q()
+        in_title = form.cleaned_data.get('in_title')
+        if in_title:
+            query = query | Q(title__icontains=text)
+        in_text = form.cleaned_data.get('in_text')
+        if in_text:
+            query = query | Q(text__icontains=text)
+        in_tags = form.cleaned_data.get('in_tags')
+        if in_tags:
+            query = query | Q(tags__name__iexact=text)
+        in_comment_text = form.cleaned_data.get('in_comment_text')
+        if in_comment_text:
+            query = query | Q(comments__text__icontains=text)
+        return query
 
 class ArticleView(DetailView):
     template_name = 'article/article.html'
