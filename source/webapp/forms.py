@@ -7,7 +7,7 @@ from webapp.models import Article, Comment, STATUS_ACTIVE
 class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
-        exclude = ['created_at', 'updated_at']
+        exclude = ['created_at', 'updated_at', 'status']
 
     def clean_title(self):
         title = self.cleaned_data['title']
